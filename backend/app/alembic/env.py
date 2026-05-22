@@ -47,7 +47,9 @@ target_metadata = MappedBase.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-alembic_config.set_main_option("sqlalchemy.url", settings.ASYNC_DB_URI)
+# alembic_config.set_main_option("sqlalchemy.url", settings.ASYNC_DB_URI)
+url = settings.ASYNC_DB_URI.replace("%", "%%")
+alembic_config.set_main_option("sqlalchemy.url", url)
 
 
 def run_migrations_offline() -> None:

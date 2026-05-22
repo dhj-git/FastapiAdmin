@@ -54,6 +54,8 @@ backend/*.db
 backend/alembic/versions/*
 !backend/alembic/versions/.gitkeep
 
+backend/devops
+
 docker/nginx/app/dist
 docker/nginx/docs/dist
 docker/nginx/web/dist
