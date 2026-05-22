@@ -15,7 +15,14 @@
 - [frontend/web/src/config/index.ts](file://frontend/web/src/config/index.ts)
 - [frontend/web/src/store/modules/setting.store.ts](file://frontend/web/src/store/modules/setting.store.ts)
 - [frontend/web/package.json](file://frontend/web/package.json)
+- [frontend/web/vite.config.ts](file://frontend/web/vite.config.ts)
 </cite>
+
+## 更新摘要
+**所做更改**
+- 更新了依赖版本信息，反映 Vue 3.5.34、Element Plus ~2.13.7、Vue Router 5.0.7 的现代化升级
+- 增强了构建配置和插件系统的说明，包括新的 Vite 插件和自动导入机制
+- 补充了现代化开发工具链的集成说明
 
 ## 目录
 1. [简介](#简介)
@@ -36,8 +43,10 @@
 - 配置管理：环境变量处理、主题配置、功能开关与持久化策略
 - 新功能开发指导：基于现有架构的设计约束与扩展建议
 
+**更新** 本次更新反映了前端架构的重大现代化改进，包括 Vue 3.5.34、Element Plus ~2.13.7、Vue Router 5.0.7 等依赖的升级，以及现代化开发工具链的集成。
+
 ## 项目结构
-前端采用 Vite + Vue3 + TypeScript + Element Plus 技术栈，遵循“按功能域划分”的组织方式：
+前端采用 Vite + Vue3 + TypeScript + Element Plus 技术栈，遵循"按功能域划分"的组织方式：
 - 应用入口与根组件：main.ts、App.vue
 - 插件体系：plugins 目录，统一通过 initPlugins(app) 注册
 - 状态管理：store 目录，基于 Pinia 并启用持久化
@@ -108,6 +117,8 @@ ST --> CFG
   - 基于 vue-i18n，支持中英双语与本地存储恢复语言偏好
 - Element Plus
   - 最后注册，确保组件与样式完整加载
+
+**更新** 依赖升级后，所有核心组件都受益于最新的 Vue 3.5.34 生态系统改进，包括更好的 TypeScript 支持、性能优化和开发体验增强。
 
 **章节来源**
 - [frontend/web/src/main.ts:23-34](file://frontend/web/src/main.ts#L23-L34)
@@ -239,6 +250,8 @@ P->>EP : initElementPlus(app)
 - 设置项持久化
   - setting.store.ts 使用 useStorage 对主题、布局、功能开关等进行持久化
 
+**更新** 基于 Vue 3.5.34 的最新 Composition API 支持，Pinia 状态管理获得了更好的响应式性能和更小的包体积。
+
 ```mermaid
 flowchart TD
 InitStore["initStore(app)"] --> CreatePinia["创建 Pinia 实例"]
@@ -267,6 +280,8 @@ ResetRoutes --> ReplaceRoute["router.replace(current)"]
   - 导航行为统一滚动至顶部
 - 关键实现路径：
   - 路由创建与注册：[frontend/web/src/router/index.ts:16-27](file://frontend/web/src/router/index.ts#L16-L27)
+
+**更新** Vue Router 5.0.7 带来了更好的 TypeScript 类型支持、性能优化和更稳定的路由守卫机制。
 
 ```mermaid
 sequenceDiagram
@@ -304,6 +319,8 @@ R-->>App : app.use(router)
   - 语言包同步导入，messages 映射语言枚举
   - 通过 initI18n(app) 注册到应用
 
+**更新** vue-i18n 11.1.10 提供了更好的性能表现和更简洁的 API 设计。
+
 **章节来源**
 - [frontend/web/src/locales/index.ts:1-130](file://frontend/web/src/locales/index.ts#L1-L130)
 
@@ -313,6 +330,8 @@ R-->>App : app.use(router)
   - 作为最后一个插件，确保组件与样式完整加载
 - 根组件集成
   - App.vue 使用 ElConfigProvider 提供全局尺寸、语言与 z-index 配置
+
+**更新** Element Plus ~2.13.7 带来了更丰富的组件生态、更好的暗色模式支持和性能优化。
 
 **章节来源**
 - [frontend/web/src/plugins/element-plus.ts:1-7](file://frontend/web/src/plugins/element-plus.ts#L1-L7)
@@ -348,13 +367,32 @@ Cfg --> App["App.vue<br/>ElConfigProvider"]
 - [frontend/web/src/store/modules/setting.store.ts:1-524](file://frontend/web/src/store/modules/setting.store.ts#L1-L524)
 - [frontend/web/package.json:7-34](file://frontend/web/package.json#L7-L34)
 
+### 现代化开发工具链
+- Vite 构建系统
+  - 基于 Vue 3.5.34 的最新特性，提供更快的冷启动和热更新
+  - 集成 unplugin-auto-import 和 unplugin-vue-components，实现自动导入和组件注册
+- TypeScript 支持
+  - 完整的 TypeScript 类型定义，包括 Vue 3.5.34 的最新 API
+  - 更好的开发体验和编译时错误检查
+- 开发工具
+  - vite-plugin-vue-devtools 提供强大的调试功能
+  - 自动代码格式化和 ESLint 集成
+
+**更新** 本次升级显著提升了开发效率和构建性能，同时保持了向后兼容性。
+
+**章节来源**
+- [frontend/web/vite.config.ts:1-200](file://frontend/web/vite.config.ts#L1-L200)
+- [frontend/web/package.json:68-119](file://frontend/web/package.json#L68-L119)
+
 ## 依赖关系分析
 - 外部依赖概览（节选）
-  - Vue3、Vue Router、Pinia、Element Plus、vue-i18n、CodeMirror、ECharts、TailwindCSS 等
+  - Vue3 3.5.34、Vue Router 5.0.7、Pinia、Element Plus ~2.13.7、vue-i18n 11.1.10、CodeMirror、ECharts、TailwindCSS 等
 - 关键内部依赖
   - main.ts 依赖 plugins/index.ts、App.vue
   - plugins/index.ts 依赖 store/index.ts、router/index.ts、directives/index.ts、locales/index.ts、plugins/element-plus.ts
   - App.vue 依赖 store/modules/setting.store.ts、config/index.ts
+
+**更新** 依赖升级带来了更好的性能表现、更丰富的 API 和更强的生态系统支持。
 
 ```mermaid
 graph TB
@@ -396,6 +434,10 @@ Settings --> Config["config/index.ts"]
   - 通过 CSS 变量与暗色模式 class 切换，避免频繁重绘
 - 构建与脚本
   - 多模式构建脚本支持按环境优化打包策略
+- **更新** 现代化依赖带来的性能提升
+  - Vue 3.5.34 提供了更好的响应式系统和更小的包体积
+  - Element Plus ~2.13.7 优化了组件渲染性能
+  - Vite 7.1.5 带来了更快的构建速度和更好的开发体验
 
 ## 故障排查指南
 - 控制台无 Banner
@@ -419,6 +461,10 @@ Settings --> Config["config/index.ts"]
 - 存储异常导致白屏
   - 监听 app:storage-invalidated 事件并跳转登录页
   - 参考：[frontend/web/src/App.vue:87-98](file://frontend/web/src/App.vue#L87-L98)
+- **更新** 依赖相关问题排查
+  - Vue 3.5.34 兼容性问题：检查浏览器支持和 polyfill 配置
+  - Element Plus ~2.13.7 组件问题：确认组件导入路径和版本匹配
+  - Vue Router 5.0.7 路由问题：验证路由配置和守卫逻辑
 
 **章节来源**
 - [frontend/web/src/main.ts:23-34](file://frontend/web/src/main.ts#L23-L34)
@@ -428,7 +474,9 @@ Settings --> Config["config/index.ts"]
 - [frontend/web/src/App.vue:81-98](file://frontend/web/src/App.vue#L81-L98)
 
 ## 结论
-该 Vue3 架构通过严格的启动顺序与插件注册契约，实现了高内聚、低耦合的应用初始化流程。Pinia、Router、指令、国际化与 Element Plus 的集成遵循明确的依赖顺序，配合 config 与 setting.store 的配置中心，提供了完善的主题、布局与功能开关管理。建议在新增功能时遵循现有插件注册顺序与持久化策略，确保系统稳定性与可维护性。
+该 Vue3 架构通过严格的启动顺序与插件注册契约，实现了高内聚、低耦合的应用初始化流程。Pinia、Router、指令、国际化与 Element Plus 的集成遵循明确的依赖顺序，配合 config 与 setting.store 的配置中心，提供了完善的主题、布局与功能开关管理。
+
+**更新** 本次现代化升级显著提升了整体性能和开发体验，Vue 3.5.34、Element Plus ~2.13.7、Vue Router 5.0.7 等依赖的引入为项目带来了更好的响应式性能、更丰富的组件生态和更强的生态系统支持。建议在新增功能时遵循现有插件注册顺序与持久化策略，充分利用现代化依赖提供的新特性和性能优势，确保系统稳定性与可维护性。
 
 ## 附录
 - 新功能开发设计指导与约束规范
@@ -439,3 +487,8 @@ Settings --> Config["config/index.ts"]
   - 国际化：新增翻译键值请在 locales/langs 下维护 JSON，并在组件中使用 $t 或 useI18n
   - 配置管理：新增配置项请在 config/index.ts 中集中管理，避免分散常量
   - 构建与环境：通过 package.json 的多模式脚本支持不同环境差异化配置
+  - **更新** 现代化开发规范
+    - 优先使用 Vue 3.5.34 的 Composition API 新特性
+    - 利用 Element Plus ~2.13.7 的新组件和改进的样式系统
+    - 采用 Vue Router 5.0.7 的新路由守卫和导航策略
+    - 集成 Vite 7.1.5 的最新构建优化和开发工具

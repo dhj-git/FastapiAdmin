@@ -5,11 +5,19 @@
 - [docker-compose.yaml](file://docker/docker-compose.yaml)
 - [Dockerfile（后端）](file://docker/backend/Dockerfile)
 - [Nginx 配置](file://docker/nginx/nginx.conf)
+- [Docker 部署说明](file://docker/README.md)
 - [后端入口 main.py](file://backend/main.py)
 - [后端配置 setting.py](file://backend/app/config/setting.py)
 - [部署脚本（Linux）](file://deploy.sh)
 - [.dockerignore](file://.dockerignore)
 </cite>
+
+## 更新摘要
+**变更内容**
+- 更新了Docker目录结构标准化改进的相关内容
+- 新增了.gitkeep文件使用规范的说明
+- 补充了nginx目录标准化结构的详细描述
+- 完善了容器资源限制和健康检查机制的说明
 
 ## 目录
 1. [简介](#简介)
@@ -26,9 +34,12 @@
 ## 简介
 本指南面向希望使用 Docker Compose 在本地或生产环境中部署 FastapiAdmin 的工程师与运维人员。文档覆盖 MySQL 数据库、Redis 缓存、后端服务（FastAPI）、Nginx 反向代理的多容器编排配置，解释环境变量、端口映射、数据卷挂载与健康检查机制，并提供开发与生产两种部署模式的操作步骤、资源限制、日志管理与常见问题排查方法。
 
+**更新** 本版本反映了Docker目录结构的标准化改进，包括.gitkeep文件的使用和nginx目录结构的规范化。
+
 ## 项目结构
 - 后端服务位于 backend/，通过 Dockerfile 构建镜像并在容器内以生产模式启动。
 - docker/ 目录包含 Docker Compose 编排文件与各组件的 Docker 配置（MySQL、Redis、Nginx）。
+- nginx目录采用标准化结构，包含ssl/、web/、app/、docs/等子目录，使用.gitkeep文件保留空目录结构。
 - 部署脚本 deploy.sh 提供一键拉取代码、构建镜像、启动服务、查看状态与日志的能力。
 
 ```mermaid
@@ -39,21 +50,33 @@ REDIS["Redis 容器"]
 BACKEND["后端服务容器"]
 NGINX["Nginx 容器"]
 end
+subgraph "标准化目录结构"
+NGINX_SSL["nginx/ssl/<br/>.gitkeep"]
+NGINX_WEB["nginx/web/<br/>.gitkeep"]
+NGINX_APP["nginx/app/<br/>.gitkeep"]
+NGINX_DOCS["nginx/docs/<br/>.gitkeep"]
+end
 subgraph "持久化存储"
 MYSQL_DATA["卷: mysql_data"]
 REDIS_DATA["卷: redis_data"]
 end
 MYSQL_DATA --> MYSQL
 REDIS_DATA --> REDIS
+NGINX_SSL --> NGINX
+NGINX_WEB --> NGINX
+NGINX_APP --> NGINX
+NGINX_DOCS --> NGINX
 MYSQL --> BACKEND
 REDIS --> BACKEND
 BACKEND --> NGINX
 ```
 
-图表来源
+**图表来源**
 - [docker-compose.yaml:11-201](file://docker/docker-compose.yaml#L11-L201)
+- [Dockerfile（后端）:1-23](file://docker/backend/Dockerfile#L1-L23)
+- [.dockerignore:1-57](file://.dockerignore#L1-L57)
 
-章节来源
+**章节来源**
 - [docker-compose.yaml:11-201](file://docker/docker-compose.yaml#L11-L201)
 - [Dockerfile（后端）:1-23](file://docker/backend/Dockerfile#L1-L23)
 - [.dockerignore:1-57](file://.dockerignore#L1-L57)
@@ -89,7 +112,7 @@ BACKEND --> NGINX
   - 健康检查：nginx -t
   - 资源限制：内存上限 256M、CPU 0.5，预留 64M
 
-章节来源
+**章节来源**
 - [docker-compose.yaml:11-201](file://docker/docker-compose.yaml#L11-L201)
 - [Dockerfile（后端）:1-23](file://docker/backend/Dockerfile#L1-L23)
 - [Nginx 配置:1-139](file://docker/nginx/nginx.conf#L1-L139)
@@ -110,7 +133,7 @@ BACKEND --> MYSQL
 BACKEND --> REDIS
 ```
 
-图表来源
+**图表来源**
 - [docker-compose.yaml:142-181](file://docker/docker-compose.yaml#L142-L181)
 - [Nginx 配置:114-130](file://docker/nginx/nginx.conf#L114-L130)
 - [后端入口 main.py:55-107](file://backend/main.py#L55-L107)
@@ -133,7 +156,7 @@ BACKEND --> REDIS
 - 资源限制
   - 内存上限 1G，预留 256M
 
-章节来源
+**章节来源**
 - [docker-compose.yaml:11-47](file://docker/docker-compose.yaml#L11-L47)
 
 ### Redis 缓存容器
@@ -150,7 +173,7 @@ BACKEND --> REDIS
 - 资源限制
   - 内存上限 512M，预留 128M
 
-章节来源
+**章节来源**
 - [docker-compose.yaml:48-87](file://docker/docker-compose.yaml#L48-L87)
 
 ### 后端服务容器（FastAPI）
@@ -168,7 +191,7 @@ BACKEND --> REDIS
 - 资源限制
   - 内存上限 1G、CPU 1.0，预留 256M
 
-章节来源
+**章节来源**
 - [docker-compose.yaml:88-141](file://docker/docker-compose.yaml#L88-L141)
 - [Dockerfile（后端）:1-23](file://docker/backend/Dockerfile#L1-L23)
 - [后端入口 main.py:55-107](file://backend/main.py#L55-L107)
@@ -180,6 +203,11 @@ BACKEND --> REDIS
   - 静态资源挂载到 /usr/share/nginx/html/web
   - 反向代理 /api/v1 到 backend:8001，支持 WebSocket
   - 速率限制与安全头
+- 标准化目录结构
+  - ssl/：SSL证书目录，使用.gitkeep保留空目录结构
+  - web/：前端静态文件目录，使用.gitkeep保留空目录结构
+  - app/：移动端H5静态文件目录，使用.gitkeep保留空目录结构
+  - docs/：文档网站静态文件目录，使用.gitkeep保留空目录结构
 - 依赖与启动顺序
   - 在后端启动后再启动
 - 健康检查
@@ -187,7 +215,7 @@ BACKEND --> REDIS
 - 资源限制
   - 内存上限 256M、CPU 0.5，预留 64M
 
-章节来源
+**章节来源**
 - [docker-compose.yaml:142-181](file://docker/docker-compose.yaml#L142-L181)
 - [Nginx 配置:1-139](file://docker/nginx/nginx.conf#L1-L139)
 
@@ -201,7 +229,7 @@ BACKEND --> REDIS
   - 通过 --env-file 指定 .env 文件，其中包含数据库与 Redis 密码、端口等
   - 后端通过 ENVIRONMENT 选择不同 .env.* 配置文件
 
-章节来源
+**章节来源**
 - [部署脚本（Linux）:25-128](file://deploy.sh#L25-L128)
 - [后端配置 setting.py:16-21](file://backend/app/config/setting.py#L16-L21)
 
@@ -221,10 +249,10 @@ REDIS["redis"] -- "service_healthy" --> BACKEND
 BACKEND --> NGINX["nginx"]
 ```
 
-图表来源
+**图表来源**
 - [docker-compose.yaml:112-161](file://docker/docker-compose.yaml#L112-L161)
 
-章节来源
+**章节来源**
 - [docker-compose.yaml:182-201](file://docker/docker-compose.yaml#L182-L201)
 
 ## 性能考虑
@@ -240,8 +268,10 @@ BACKEND --> NGINX["nginx"]
   - 使用本地绑定卷保证数据持久化与性能
 - 日志
   - 使用 json-file 驱动并限制单文件大小与数量，便于容器日志收集
+- 目录结构优化
+  - 使用.gitkeep文件保留空目录结构，确保版本控制的一致性
 
-章节来源
+**章节来源**
 - [docker-compose.yaml:41-46](file://docker/docker-compose.yaml#L41-L46)
 - [docker-compose.yaml:81-86](file://docker/docker-compose.yaml#L81-L86)
 - [docker-compose.yaml:134-140](file://docker/docker-compose.yaml#L134-L140)
@@ -262,8 +292,11 @@ BACKEND --> NGINX["nginx"]
   - 使用 docker compose ps 查看各服务状态
 - 配置加载
   - 确认 .env 文件存在且包含必需变量（如 MYSQL_ROOT_PASSWORD、MYSQL_PASSWORD、REDIS_PASSWORD）
+- 目录结构问题
+  - 确认nginx目录下ssl/、web/、app/、docs/目录均存在.gitkeep文件
+  - 检查.gitkeep文件是否正确保留了空目录结构
 
-章节来源
+**章节来源**
 - [docker-compose.yaml:29-35](file://docker/docker-compose.yaml#L29-L35)
 - [docker-compose.yaml:69-75](file://docker/docker-compose.yaml#L69-L75)
 - [docker-compose.yaml:119-128](file://docker/docker-compose.yaml#L119-L128)
@@ -272,11 +305,12 @@ BACKEND --> NGINX["nginx"]
 - [部署脚本（Linux）:117-128](file://deploy.sh#L117-L128)
 
 ## 结论
-通过 Docker Compose，FastapiAdmin 可以快速在本地或生产环境完成数据库、缓存、后端与反向代理的一键编排部署。建议在生产环境中：
+通过 Docker Compose，FastapiAdmin 可以快速在本地或生产环境完成数据库、缓存、后端与反向代理的一键编排部署。最新的Docker目录结构标准化改进包括.gitkeep文件的使用和nginx目录结构的规范化，提升了项目的维护性和一致性。建议在生产环境中：
 - 使用独立 .env.prod 并严格管理敏感变量
 - 配置 SSL 证书与域名
 - 启用资源限制与健康检查
 - 使用日志聚合与监控体系
+- 遵循标准化的目录结构规范
 
 ## 附录
 
@@ -290,7 +324,7 @@ BACKEND --> NGINX["nginx"]
   - 后端镜像构建完成后运行，不挂载源码
   - Nginx 配置 SSL 证书与反向代理
 
-章节来源
+**章节来源**
 - [docker-compose.yaml:4-6](file://docker/docker-compose.yaml#L4-L6)
 - [docker-compose.yaml:109-111](file://docker/docker-compose.yaml#L109-L111)
 - [Nginx 配置:84-86](file://docker/nginx/nginx.conf#L84-L86)
@@ -303,7 +337,7 @@ BACKEND --> NGINX["nginx"]
   - 使用 deploy.sh 提供 start/stop/restart/logs/verify/clean 等命令
   - 也可直接使用 docker compose 命令
 
-章节来源
+**章节来源**
 - [Dockerfile（后端）:14-17](file://docker/backend/Dockerfile#L14-L17)
 - [.dockerignore:1-57](file://.dockerignore#L1-L57)
 - [部署脚本（Linux）:156-174](file://deploy.sh#L156-L174)
@@ -323,6 +357,21 @@ Health-->>Compose : 健康
 end
 ```
 
-图表来源
+**图表来源**
 - [docker-compose.yaml:119-128](file://docker/docker-compose.yaml#L119-L128)
 - [后端入口 main.py:55-107](file://backend/main.py#L55-L107)
+
+### Docker 目录结构标准化规范
+- 目录结构
+  - docker/backend/：后端Dockerfile存放目录
+  - docker/nginx/：Nginx配置与静态资源目录
+  - docker/mysql/：MySQL数据目录占位符
+  - docker/redis/：Redis数据目录占位符
+- .gitkeep文件使用规范
+  - 仅用于保留空目录结构，不包含任何实际内容
+  - 在nginx/目录下保留ssl/、web/、app/、docs/等子目录
+  - 确保版本控制系统能够正确跟踪空目录
+
+**章节来源**
+- [Docker 部署说明:5-32](file://docker/README.md#L5-L32)
+- [docker-compose.yaml:182-201](file://docker/docker-compose.yaml#L182-L201)
