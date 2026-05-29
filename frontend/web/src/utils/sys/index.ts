@@ -6,13 +6,14 @@ import { upgradeLogList } from "@/mock/upgrade/changeLog";
 import { ElNotification } from "element-plus";
 import { useUserStore } from "@stores";
 import { StorageConfig } from "@utils";
+import { BANNER } from "../../../build/banner";
 
 // -----------------------------
 // Console banner
 // -----------------------------
 
 export function printConsoleBanner(): void {
-  // ANSI escape codes via https://patorjk.com/software/taag/#p=display&f=Big&t=ABB%0A
+  console.log(`%c${BANNER}`, "color: #409eff; font-weight: bold;");
   const asciiArt = `
 \x1b[32m欢迎使用 Fastapi Admin！
 \x1b[0m
